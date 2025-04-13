@@ -2,9 +2,20 @@ name: CI
 on:
   push:
     branches: [master]
+    tags:
+      - 'v*' # Run workflow on version tags, e.g. v1.0.0
   pull_request:
     branches: [master]
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+  workflow_dispatch: 
+    inputs:
+      create_release:
+        description: 'Create a new release'
+        type: boolean
+        default: false
+      version:
+        description: 'Version number (required if creating release)'
+        type: string
+        required: false
     
 jobs:
   Build:
@@ -27,8 +38,32 @@ jobs:
       - name: Build
         run: |
           xcodebuild -scheme eul -project ./eul.xcodeproj \
+          -configuration Release \
+          -derivedDataPath ./DerivedData \
           -sdk macosx build \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED="NO" \
           CODE_SIGN_ENTITLEMENTS="" \
           CODE_SIGNING_ALLOWED="NO" | xcpretty && exit ${PIPESTATUS[0]}
+      - name: Find and zip app
+        run: |
+          APP_PATH=$(find ./DerivedData -name "*.app" -type d | head -n 1)
+          mkdir -p ./artifacts
+          ditto -c -k --keepParent "$APP_PATH" ./artifacts/eul.app.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: eul-app
+          path: ./artifacts/eul.app.zip
+          retention-days: 7
+      
+      - name: Create Release
+        id: create_release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name || github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          files: ./artifacts/eul.app.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
