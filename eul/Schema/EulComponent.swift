@@ -50,6 +50,8 @@ enum EulComponent: String, CaseIterable, Identifiable, Codable, JSONCodabble, Lo
             return AnyView(DiskView())
         case .GPU:
             return AnyView(GpuView())
+        case .LiquidCooler:
+            return AnyView(LiquidCoolerView())
         }
     }
 
@@ -60,6 +62,7 @@ enum EulComponent: String, CaseIterable, Identifiable, Codable, JSONCodabble, Lo
     case Network
     case Disk
     case GPU
+    case LiquidCooler
 
     static var allCases: [EulComponent] {
         [.CPU, .GPU, .Memory]
@@ -67,6 +70,7 @@ enum EulComponent: String, CaseIterable, Identifiable, Codable, JSONCodabble, Lo
             .appending(.Network)
             .appending(.Battery, condition: SharedStore.battery.isValid)
             .appending(.Disk)
+            .appending(.LiquidCooler)
     }
 
     static var defaultComponents: [EulComponent] {

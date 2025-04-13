@@ -37,6 +37,8 @@ enum EulMenuComponent: String, CaseIterable, Identifiable, JSONCodabble {
             return AnyView(DiskMenuBlockView())
         case .GPU:
             return AnyView(GpuMenuBlockView())
+        case .LiquidCooler:
+            return AnyView(LiquidCoolerMenuBlockView())
         }
     }
 
@@ -48,12 +50,14 @@ enum EulMenuComponent: String, CaseIterable, Identifiable, JSONCodabble {
     case Bluetooth
     case Disk
     case GPU
+    case LiquidCooler
 
     static var allCases: [EulMenuComponent] {
         [.CPU, .GPU]
             .appending(.Fan, condition: SmcControl.shared.isFanValid)
             .appending([.Memory, .Network, .Bluetooth, .Disk])
             .appending(.Battery, condition: SharedStore.battery.isValid)
+            .appending(.LiquidCooler)
     }
 
     static var defaultComponents: [Self] {

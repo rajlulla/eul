@@ -9,7 +9,7 @@
 import Foundation
 
 public enum Container {
-    public static let defaults = UserDefaults(suiteName: "com.gaosun.eul.shared")
+    public static let defaults = UserDefaults(suiteName: "com.rajlulla.eul.shared")
     static let pListEncoder = PropertyListEncoder()
     static let pListDecoder = PropertyListDecoder()
 

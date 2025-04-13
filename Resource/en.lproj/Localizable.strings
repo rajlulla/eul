@@ -113,6 +113,7 @@
 "component.network" = "Network";
 "component.disk" = "Disk";
 "component.bluetooth" = "Bluetooth";
+"component.liquidcooler" = "Liquid Cooler";
 
 // MARK: Process
 "process" = "Process";
